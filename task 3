@@ -1,0 +1,44 @@
+#LEVEL:2 Task:3-Feature Engineering
+# Import necessary libraries
+import pandas as pd
+
+# Load the dataset
+file_path = r'C:\Users\LENOVO\Updated_Dataset.csv'  
+try:
+    df = pd.read_csv(file_path)
+except FileNotFoundError:
+    print("Error: Dataset file not found. Please check the file path.")
+    exit()
+
+# Normalize column names
+df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_').str.replace('[^a-z0-9_]', '', regex=True)
+print("Normalized Columns:", df.columns.tolist())
+
+# ** Step 1: Extract Additional Features **
+# Feature 1: Length of Restaurant Name
+df['name_length'] = df['restaurant_name'].str.len()
+
+# Feature 2: Length of Address
+df['address_length'] = df['address'].str.len()
+
+# ** Step 2: Use Existing Columns for Encoding **
+# Feature 3: Has Table Booking
+if 'has_table_booking' in df.columns:
+    df['has_table_booking_encoded'] = df['has_table_booking'].str.lower().map({'yes': 1, 'no': 0}).fillna(0).astype(int)
+else:
+    print("Error: 'has_table_booking' column is missing in the dataset.")
+
+# Feature 4: Has Online Delivery
+if 'has_online_delivery' in df.columns:
+    df['has_online_delivery_encoded'] = df['has_online_delivery'].str.lower().map({'yes': 1, 'no': 0}).fillna(0).astype(int)
+else:
+    print("Error: 'has_online_delivery' column is missing in the dataset.")
+
+# Display the first few rows to verify the new features
+print("\nSample Data with New Features:")
+print(df[['restaurant_name', 'name_length', 'address', 'address_length', 'has_table_booking', 'has_table_booking_encoded', 'has_online_delivery', 'has_online_delivery_encoded']].head())
+
+# Save the updated dataset to a new CSV file
+output_file_path = r'C:\Users\LENOVO\Downloads\Updated_Dataset.csv'
+df.to_csv(output_file_path, index=False)
+print(f"\nUpdated dataset saved to {output_file_path}")
